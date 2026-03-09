@@ -1,0 +1,95 @@
+# Deployment
+apiVersion : apps/v1
+kind : Deployment
+metadata:
+  name: nodejs-web-deployment
+  labels:
+    app : nodejs-web
+spec:
+  replicas : 3
+  selector:
+    matchLabels:
+      app : nodejs-web
+  template:
+    metadata:
+      labels:
+        app : nodejs-web
+    spec: 
+      containers:
+        - name : nodejs-web-contaniner
+          image : harathiio/nodejsweb-io:latest
+          ports:
+            - containerPort : 3000
+          resources:
+            requests:
+              memory : "512Mi"
+              cpu : "100m"
+            limits:
+              memory : "1024Mi"
+              cpu : "300m"
+          env:
+          # ConfigMap values
+            - name : APP_ENV
+              valueFrom :
+                configMapKeyRef :
+                  name : nodejs-web-config
+                  key: APP_ENV
+            
+            - name : APP_OS
+              valueFrom :
+                configMapKeyRef :
+                  name : nodejs-web-config
+                  key : APP_OS
+                     
+            - name : APP_NETWORK
+              valueFrom :
+                configMapKeyRef :
+                  name : nodejs-web-config
+                  key : APP_NETWORK
+                  
+            - name: WELCOME_MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: nodejs-web-config
+                  key: welcome.message
+                     
+            # Secrets
+            - name : username
+              valueFrom:
+                secretKeyRef:
+                  name : nodejs-web-secret
+                  key :  username
+
+            - name : password
+              valueFrom:
+                secretKeyRef:
+                  name : nodejs-web-secret
+                  key :  password
+
+            # Volumes
+          volumeMounts:
+            - name: nodejs-web-pv
+              mountPath: /app/data
+                
+      volumes:
+        - name: nodejs-web-pv
+          persistentVolumeClaim:
+            claimName: nodejs-web-pvc
+
+---
+# Service
+apiVersion : v1
+kind : Service
+metadata:
+  name : nodejs-web-service
+  labels:
+    app : nodejs-web-deploy
+spec:
+  type: NodePort
+  selector:
+    app : nodejs-web
+  ports:
+    - port : 80
+      targetPort : 3000
+      nodePort : 30005   # NodePort range => 30000 - 32767
+      protocol : TCP
