@@ -5,5 +5,5 @@ metadata:
 data:
   APP_ENV: "dev"
   APP_OS: "ubuntu/nodejs"
-  APP_NETWORK: "NodePort/30005"
+  APP_NETWORK: "NodePort/30004"
   welcome.message: "Welcome to the NodeJS Web App on Minikube"
