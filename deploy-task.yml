@@ -17,7 +17,7 @@ spec:
     spec: 
       containers:
         - name : nodejs-web-contaniner
-          image : harathiio/nodejsweb-io:latest
+          image : bharathiio/nodejsweb-io:latest
           ports:
             - containerPort : 3000
           resources:
@@ -92,4 +92,5 @@ spec:
     - port : 80
       targetPort : 3000
       nodePort : 30005   # NodePort range => 30000 - 32767
+
       protocol : TCP
